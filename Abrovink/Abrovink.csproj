@@ -50,8 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalCursor.cs" />
     <Compile Include="EyeDropper\EyeDropper.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="EyeDropper\EyeDropper.Designer.cs">
       <DependentUpon>EyeDropper.cs</DependentUpon>

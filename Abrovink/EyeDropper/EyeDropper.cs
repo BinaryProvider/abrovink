@@ -1,32 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
-using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Collections.Generic;
+using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace Abrovink.EyeDropper
 {
+    public class PanelDoubleBuffered : Panel
+    {
+        public PanelDoubleBuffered() : base()
+        {
+            this.DoubleBuffered = true;
+        }
+    }
+
     public partial class Widget : Form, IAbrovinkWidget
     {
         private IKeyboardMouseEvents hook;
-        private Point offset = new Point(40, -30);
+        private Point offset = new Point(30, -30);
 
-        private Timer timer = new Timer();
+        private Timer timer;
 
+        private Bitmap previewImage = new Bitmap(58, 58);
         private int previewBorderWidth = 1;
         private Color previewBorderColor = Color.FromArgb(100, 100, 100);
+        private Graphics previewGraphics;
 
-        Image screenshot;
+        private Image screenshot;
+        private Color color;
+        private int screenWidth;
 
-        Color color;
+        private Point cursorLoc;
+        private Point translatedCursorLoc;
 
         public Widget()
         {
@@ -34,47 +43,33 @@ namespace Abrovink.EyeDropper
 
             hook = Hook.GlobalEvents();
             hook.MouseMoveExt += Hook_MouseMoveExt;
+            hook.MouseDownExt += Hook_MouseDownExt;
 
-            timer.Interval = 500;
+            screenWidth = Screen.FromControl(this).Bounds.Width;
+            screenshot = CaptureWindow();
+
+            previewPanel.Paint += PreviewPanel_Paint;
+
+            timer = new Timer();
+            timer.Interval = 1000;
             timer.Tick += Timer_Tick;
             timer.Start();
 
-            screenshot = CaptureAllWindows();
-            //screenshot = CaptureWindow(Win32.GetDesktopWindow());
+            this.ShowInTaskbar = false;
+            this.FormClosing += Widget_FormClosing;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            color = GetPixelColor(Cursor.Position.X, Cursor.Position.Y);
-            previewPanel.BackColor = color;
-            previewLabel.Text = ColorToHexString(color);
-            screenshot = CaptureAllWindows();
+            screenshot.Dispose();
+            screenshot = CaptureWindow();
         }
 
-        private void Hook_MouseMoveExt(object sender, MouseEventExtArgs e)
+        private void Widget_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Point loc = Cursor.Position;
-            loc.Offset(offset.X, offset.Y);
-            this.Location = loc;
-            this.TopMost = true;
-
-            Bitmap previewPart = new Bitmap(58, 58);
-            using (Graphics g = Graphics.FromImage(previewPart))
-            {
-                Point cursorLoc = Cursor.Position;
-
-
-
-                cursorLoc.Offset((screenshot.Width - cursorLoc.X), (screenshot.Height - cursorLoc.Y));
-
-
-
-                g.SmoothingMode = SmoothingMode.HighQuality;
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                g.DrawImage(screenshot, new Rectangle(0, 0, 58, 58), new Rectangle(Cursor.Position.X - 6, Cursor.Position.Y - 6, 12, 12), GraphicsUnit.Pixel);
-            }
-            previewPanel.BackgroundImage = previewPart;
+            timer.Stop();
+            previewImage.Dispose();
+            screenshot.Dispose();
         }
 
         private void Widget_Load(object sender, EventArgs e)
@@ -82,6 +77,7 @@ namespace Abrovink.EyeDropper
             Point loc = Cursor.Position;
             loc.Offset(offset.X, offset.Y);
             this.Location = loc;
+            screenshot = CaptureWindow();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -89,16 +85,69 @@ namespace Abrovink.EyeDropper
             DrawBorder();
         }
 
+        private void Hook_MouseDownExt(object sender, MouseEventExtArgs e)
+        {
+            Clipboard.SetDataObject(previewLabel.Text, false, 5, 200);
+            e.Handled = true;
+            hook.MouseMoveExt -= Hook_MouseMoveExt;
+            hook.MouseDownExt -= Hook_MouseDownExt;
+            hook.Dispose();
+
+            this.Close();
+        }
+
+        private void Hook_MouseMoveExt(object sender, MouseEventExtArgs e)
+        {
+            cursorLoc = Cursor.Position;
+            cursorLoc.Offset(offset.X, offset.Y);
+            this.Location = cursorLoc;
+            this.TopMost = true;
+
+            previewImage = new Bitmap(58, 58);
+            using (previewGraphics = Graphics.FromImage(previewImage))
+            {
+                translatedCursorLoc = Cursor.Position;
+
+                if(screenWidth != screenshot.Width)
+                    translatedCursorLoc = new Point(Cursor.Position.X + screenWidth, Cursor.Position.Y);
+
+                previewGraphics.SmoothingMode = SmoothingMode.HighQuality;
+                previewGraphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                previewGraphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                previewGraphics.DrawImage(screenshot, new Rectangle(0, 0, 58, 58), new Rectangle(translatedCursorLoc.X - 3, translatedCursorLoc.Y - 3, 7, 7), GraphicsUnit.Pixel);
+            }
+
+            color = previewImage.GetPixel(previewImage.Width / 2, previewImage.Height / 2);
+            previewLabel.Text = ColorToHexString(color);
+
+            previewPanel.BackgroundImage = previewImage;
+        }
+
         private void DrawBorder()
         {
             IntPtr hdc = Win32.GetWindowDC(this.Handle);
             Graphics g = Graphics.FromHdc(hdc);
             Pen p = new Pen(previewBorderColor, previewBorderWidth);
+
             Rectangle r = new Rectangle(0, 0, DisplayRectangle.Width - previewBorderWidth, DisplayRectangle.Height - previewBorderWidth);
             g.DrawRectangle(p, r);
+
             g.DrawLine(p, new Point(previewPanel.Width + previewBorderWidth, previewBorderWidth), new Point(previewPanel.Width + previewBorderWidth, previewPanel.Height));
+
             g.Dispose();
             Win32.ReleaseDC(this.Handle, hdc);
+        }
+
+        private void PreviewPanel_Paint(object sender, PaintEventArgs e)
+        {
+            Color crosshairColor = DifferenceColor(color);
+            Point p1 = new Point(previewPanel.Width / 2, 25);
+            Point p2 = new Point(previewPanel.Width / 2, previewPanel.Height - 25);
+            Point p3 = new Point(25, previewPanel.Height / 2);
+            Point p4 = new Point(previewPanel.Width - 25, previewPanel.Height / 2);
+            e.Graphics.DrawLine(new Pen(crosshairColor, 1), p1, p2);
+            e.Graphics.DrawLine(new Pen(crosshairColor, 1), p3, p4);
         }
 
         private Color GetPixelColor(int x, int y)
@@ -110,61 +159,38 @@ namespace Abrovink.EyeDropper
             return color;
         }
 
-        private string ColorToHexString(System.Drawing.Color c)
+        private string ColorToHexString(Color c)
         {
             return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
 
-        private string ColorToRGBString(System.Drawing.Color c)
+        private string ColorToRGBString(Color c)
         {
             return "RGB(" + c.R.ToString() + "," + c.G.ToString() + "," + c.B.ToString() + ")";
         }
 
-        private Image CaptureAllWindows()
+        private Image CaptureWindow()
         {
-            Bitmap screenshot = new Bitmap(
-                SystemInformation.VirtualScreen.Width,
-                SystemInformation.VirtualScreen.Height,
-                PixelFormat.Format32bppArgb);
+            try
+            {
+                Bitmap screen = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height, PixelFormat.Format32bppArgb);
 
-            Graphics screenGraph = Graphics.FromImage(screenshot);
+                using (Graphics screenGraph = Graphics.FromImage(screen))
+                {
+                    screenGraph.CopyFromScreen(SystemInformation.VirtualScreen.X, SystemInformation.VirtualScreen.Y, 0, 0, SystemInformation.VirtualScreen.Size, CopyPixelOperation.SourceCopy);
+                }
 
-            screenGraph.CopyFromScreen(
-                SystemInformation.VirtualScreen.X,
-                SystemInformation.VirtualScreen.Y,
-                0,
-                0,
-                SystemInformation.VirtualScreen.Size,
-                CopyPixelOperation.SourceCopy);
-
-            return screenshot;
+                return screen;
+            }
+            catch
+            {
+                return new Bitmap(1, 1);
+            }
         }
 
-        private Image CaptureWindow(IntPtr handle)
-        { 
-            IntPtr hdcSrc = Win32.GetWindowDC(handle);
-
-            Win32.RECT windowRect = new Win32.RECT();
-            Win32.GetWindowRect(handle, ref windowRect);
-
-            int width = windowRect.right - windowRect.left;
-            int height = windowRect.bottom - windowRect.top;
-
-            IntPtr hdcDest = Win32.CreateCompatibleDC(hdcSrc);
-            IntPtr hBitmap = Win32.CreateCompatibleBitmap(hdcSrc, width, height);
-            IntPtr hOld = Win32.SelectObject(hdcDest, hBitmap);
-
-            Win32.BitBlt(hdcDest, 0, 0, width, height, hdcSrc, 0, 0, Win32.SRCCOPY);
-            Win32.SelectObject(hdcDest, hOld);
-
-            Win32.DeleteDC(hdcDest);
-            Win32.ReleaseDC(handle, hdcSrc);
-
-            Image img = Image.FromHbitmap(hBitmap);
-
-            Win32.DeleteObject(hBitmap);
-
-            return img;
+        private static Color DifferenceColor(Color c)
+        {
+            return (((c.R + c.B + c.G) / 3) > 128) ? Color.Black : Color.White;
         }
     }
 }

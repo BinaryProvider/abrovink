@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.previewPanel = new System.Windows.Forms.Panel();
+            this.previewPanel = new PanelDoubleBuffered();
             this.previewLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 

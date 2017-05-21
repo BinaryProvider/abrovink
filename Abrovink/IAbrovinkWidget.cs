@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Abrovink
 {
+    public delegate void WidgetClosing();
+
     public interface IAbrovinkWidget
     {
-
+        event WidgetClosing isClosing;
     }
 }

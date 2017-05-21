@@ -8,17 +8,27 @@ namespace Abrovink
 {
     static class Program
     {
+        static TrayApp app;
+
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (TrayApp app = new TrayApp())
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
+
+            using (app = new TrayApp())
             {
                 app.Start();
                 Application.Run();
             }
         }
+
+        static void OnProcessExit(object sender, EventArgs e)
+        {
+            app.Dispose();
+        }
+
     }
 }

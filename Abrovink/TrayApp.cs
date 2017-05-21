@@ -71,9 +71,15 @@ namespace Abrovink
                     {
                         activeTool = true;
                         globalCursor.Change(@"%systemroot%\Cursors\cross_i.cur");
-                        EyeDropper.Widget frm = new EyeDropper.Widget();
-                        frm.FormClosing += CleanUpWidget;
-                        frm.Show();
+                        EyeDropper.Widget widget = new EyeDropper.Widget();
+                        widget.Show();
+                        ((IAbrovinkWidget)widget).isClosing += CleanUpWidget;
+                    }
+                    else if ((Control.ModifierKeys == Keys.Control) && e.KeyCode == Keys.D2)
+                    {
+                        activeTool = true;
+                        Ruler.Widget widget = new Ruler.Widget();
+                        widget.isClosing += CleanUpWidget;
                     }
                 }
             }
@@ -83,7 +89,7 @@ namespace Abrovink
             }
         }
 
-        private void CleanUpWidget(object sender, FormClosingEventArgs e)
+        private void CleanUpWidget()
         {
             activeTool = false;
             globalCursor.ResetToDefault();
@@ -91,6 +97,7 @@ namespace Abrovink
 
         public void Dispose()
         {
+            icon.Visible = false;
             icon.Dispose();
         }
     }

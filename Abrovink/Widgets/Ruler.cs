@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ namespace Abrovink.Ruler
         private Form captureForm;
         private Point p1, p2, s1, s2;
         private Point prev1, prev2;
+
+        private Timer timer;
 
         private Pen linePen = new Pen(Color.White, 1);
         private Pen shadowPen = new Pen(Color.Black, 1);
@@ -46,12 +49,15 @@ namespace Abrovink.Ruler
             hook.MouseDownExt += Hook_MouseDownExt;
             hook.MouseMoveExt += Hook_MouseMoveExt;
             hook.MouseUpExt += Hook_MouseUpExt;
+
+            timer = new Timer();
+            timer.Interval = 1000;
+            timer.Tick += Timer_Tick;
+            timer.Start();
         }
 
         private void Hook_MouseDownExt(object sender, MouseEventExtArgs e)
         {
-            captureForm.Invalidate();
-
             p1 = Cursor.Position;
             p2 = Cursor.Position;
 
@@ -96,7 +102,7 @@ namespace Abrovink.Ruler
             path.AddLine(prev1, prev2);
 
             redrawRectangle = Rectangle.Round(path.GetBounds());
-            redrawRectangle.Inflate(50, 50);
+            redrawRectangle.Inflate(100, 100);
 
             captureForm.Invalidate(new Region(redrawRectangle), false);
         }
@@ -132,11 +138,85 @@ namespace Abrovink.Ruler
         {
             if (drawLine)
             {
-                e.Graphics.DrawLine(linePen, p1, p2);
-                //e.Graphics.DrawLine(shadowPen, s1, s2);
+                e.Graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
 
-                // TODO: Implement ruler lines
+                e.Graphics.DrawLine(linePen, p1, p2);
+                e.Graphics.DrawLine(shadowPen, s1, s2);
+
+                double angle = DegreeToRadian(AngleBetweenPoints(p1, p2));
+
+                for(int i = 0; i < length; i++)
+                {
+                    int length = 0;
+
+                    if (i % 5 == 0)
+                    {
+                        length = 2;
+                    }
+
+                    if (i % 10 == 0)
+                    {
+                        length = 6;
+                    }
+
+                    if (i % 20 == 0)
+                    {
+                        length = 10;
+                    }
+
+                    if (i % 100 == 0)
+                    {
+                        length = 15;
+                    }
+
+                    Point p = CalculatePoint(p1, p2, i);
+
+                    int x = (int)(p.X + Math.Cos(angle - DegreeToRadian(90)) * length);
+                    int y = (int)(p.Y + Math.Sin(angle - DegreeToRadian(90)) * length);
+                    Point lp1 = new Point(x, y);
+
+                    x = (int)(p.X - Math.Cos(angle - DegreeToRadian(90)) * length);
+                    y = (int)(p.Y - Math.Sin(angle - DegreeToRadian(90)) * length);
+                    Point lp2 = new Point(x, y);
+
+                    x = (int)(p.X + Math.Cos(angle - DegreeToRadian(90)) * 30);
+                    y = (int)(p.Y + Math.Sin(angle - DegreeToRadian(90)) * 30);
+                    Point tp1 = new Point(x, y);
+
+                    x = (int)(p.X - Math.Cos(angle - DegreeToRadian(90)) * 30);
+                    y = (int)(p.Y - Math.Sin(angle - DegreeToRadian(90)) * 30);
+                    Point tp2 = new Point(x, y);
+
+                    e.Graphics.DrawLine(linePen, p, lp1);
+                    e.Graphics.DrawLine(shadowPen, p, lp2);
+
+                    //if (i % 100 == 0)
+                    //{
+                    //    StringFormat stringFormat = new StringFormat();
+                    //    stringFormat.Alignment = StringAlignment.Center;
+                    //    stringFormat.LineAlignment = StringAlignment.Center;
+
+                    //    e.Graphics.DrawString(i.ToString(), new Font("Courier New", 10, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, tp1, stringFormat);
+
+                    //    e.Graphics.DrawString(i.ToString(), new Font("Courier New", 10, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Black, tp2, stringFormat);
+                    //}
+               
+                }
+
+                StringFormat stringFormat = new StringFormat();
+                stringFormat.Alignment = StringAlignment.Center;
+                stringFormat.LineAlignment = StringAlignment.Center;
+
+                Point tp = p2;
+                tp.Offset(40, 0);
+
+                e.Graphics.DrawString(length.ToString(), new Font("Courier New", 20, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, tp, stringFormat);
             }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            captureForm.Invalidate();
         }
 
         public void Close()
@@ -144,6 +224,30 @@ namespace Abrovink.Ruler
             hook.Dispose();
             Utils.DisableCaptureForm(FORM_NAME);
             isClosing();
+        }
+
+        private Point CalculatePoint(Point a, Point b, int distance)
+        {
+            Point newPoint = new Point(0, 0);
+            double magnitude = Math.Sqrt(Math.Pow((b.Y - a.Y), 2) + Math.Pow((b.X - a.X), 2));
+            if (magnitude != 0)
+            {
+                newPoint.X = (int)(a.X + (distance * ((b.X - a.X) / magnitude)));
+                newPoint.Y = (int)(a.Y + (distance * ((b.Y - a.Y) / magnitude)));
+            }
+            return newPoint;
+        }
+
+        private double DegreeToRadian(double angle)
+        {
+            return Math.PI * angle / 180.0;
+        }
+
+        private double AngleBetweenPoints(Point a, Point b)
+        {
+            float x = b.X - a.X;
+            float y = b.Y - a.Y;
+            return Math.Atan2(y, x) * 180.0 / Math.PI;
         }
 
     }

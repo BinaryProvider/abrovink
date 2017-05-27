@@ -77,6 +77,7 @@ namespace Abrovink
                     }
                     else if ((Control.ModifierKeys == Keys.Control) && e.KeyCode == Keys.D2)
                     {
+                        globalCursor.Change(@"%systemroot%\Cursors\aero_ew.cur");
                         activeTool = true;
                         Ruler.Widget widget = new Ruler.Widget();
                         widget.isClosing += CleanUpWidget;

@@ -26,8 +26,7 @@ namespace Abrovink.Ruler
 
         private Timer timer;
 
-        private Pen linePen = new Pen(Color.White, 1);
-        private Pen shadowPen = new Pen(Color.Black, 1);
+        private Pen linePen = new Pen(Color.Black, 1);
 
         private bool drawLine = false;
         private bool forceStraight = false;
@@ -110,6 +109,8 @@ namespace Abrovink.Ruler
         private void Hook_MouseUpExt(object sender, MouseEventExtArgs e)
         {
             drawLine = false;
+            hook.KeyDown -= Hook_KeyDown;
+            hook.KeyUp -= Hook_KeyUp;
             hook.MouseDownExt -= Hook_MouseDownExt;
             hook.MouseMoveExt -= Hook_MouseMoveExt;
             hook.MouseUpExt -= Hook_MouseUpExt;
@@ -125,92 +126,96 @@ namespace Abrovink.Ruler
                 p1 = points[0];
                 p2 = points[1];
             }
+
+            if(Control.ModifierKeys == Keys.Control)
+            {
+                linePen.Color = Color.White;
+            }
+
+            captureForm.Refresh();
         }
+
         private void Hook_KeyUp(object sender, KeyEventArgs e)
         {
             if (Control.ModifierKeys == Keys.Shift)
             {
                 forceStraight = false;
             }
+
+            if (Control.ModifierKeys == Keys.Control)
+            {
+                linePen.Color = Color.Black;
+            }
+
+            captureForm.Refresh();
         }
 
         private void CaptureForm_Paint(object sender, PaintEventArgs e)
         {
+            bool rightToLeft = (p1.X > p2.X);
+
             if (drawLine)
             {
                 e.Graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
 
                 e.Graphics.DrawLine(linePen, p1, p2);
-                e.Graphics.DrawLine(shadowPen, s1, s2);
 
                 double angle = DegreeToRadian(AngleBetweenPoints(p1, p2));
 
                 for(int i = 0; i < length; i++)
                 {
-                    int length = 0;
+                    if(i == 0 || i == (length - 1))
+                    {
+                        linePen.Width = 2;
+                    }
+                    else
+                    {
+                        linePen.Width = 1;
+                    }
+
+                    int strokeLength = 0;
 
                     if (i % 5 == 0)
                     {
-                        length = 2;
+                        strokeLength = 5;
                     }
 
-                    if (i % 10 == 0)
+                    if (i % 50 == 0)
                     {
-                        length = 6;
+                        strokeLength = 8;
                     }
 
-                    if (i % 20 == 0)
+                    if (i == (length - 1))
                     {
-                        length = 10;
-                    }
-
-                    if (i % 100 == 0)
-                    {
-                        length = 15;
+                        strokeLength = 8;
                     }
 
                     Point p = CalculatePoint(p1, p2, i);
 
-                    int x = (int)(p.X + Math.Cos(angle - DegreeToRadian(90)) * length);
-                    int y = (int)(p.Y + Math.Sin(angle - DegreeToRadian(90)) * length);
+                    int x = (int)(p.X + Math.Cos(angle - DegreeToRadian(90)) * strokeLength);
+                    int y = (int)(p.Y + Math.Sin(angle - DegreeToRadian(90)) * strokeLength);
+
+                    if(rightToLeft)
+                    {
+                        x = (int)(p.X - Math.Cos(angle - DegreeToRadian(90)) * strokeLength);
+                        y = (int)(p.Y - Math.Sin(angle - DegreeToRadian(90)) * strokeLength);
+                    }
+
                     Point lp1 = new Point(x, y);
 
-                    x = (int)(p.X - Math.Cos(angle - DegreeToRadian(90)) * length);
-                    y = (int)(p.Y - Math.Sin(angle - DegreeToRadian(90)) * length);
-                    Point lp2 = new Point(x, y);
-
-                    x = (int)(p.X + Math.Cos(angle - DegreeToRadian(90)) * 30);
-                    y = (int)(p.Y + Math.Sin(angle - DegreeToRadian(90)) * 30);
-                    Point tp1 = new Point(x, y);
-
-                    x = (int)(p.X - Math.Cos(angle - DegreeToRadian(90)) * 30);
-                    y = (int)(p.Y - Math.Sin(angle - DegreeToRadian(90)) * 30);
-                    Point tp2 = new Point(x, y);
-
                     e.Graphics.DrawLine(linePen, p, lp1);
-                    e.Graphics.DrawLine(shadowPen, p, lp2);
-
-                    //if (i % 100 == 0)
-                    //{
-                    //    StringFormat stringFormat = new StringFormat();
-                    //    stringFormat.Alignment = StringAlignment.Center;
-                    //    stringFormat.LineAlignment = StringAlignment.Center;
-
-                    //    e.Graphics.DrawString(i.ToString(), new Font("Courier New", 10, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, tp1, stringFormat);
-
-                    //    e.Graphics.DrawString(i.ToString(), new Font("Courier New", 10, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Black, tp2, stringFormat);
-                    //}
-               
                 }
 
                 StringFormat stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
                 stringFormat.LineAlignment = StringAlignment.Center;
 
-                Point tp = p2;
-                tp.Offset(40, 0);
+                int tx = (int)(p2.X + Math.Cos(angle - DegreeToRadian(90)) * 30);
+                int ty = (int)(p2.Y + Math.Sin(angle - DegreeToRadian(90)) * 30);
+                Point tp = new Point(tx, ty);
+                tp.Offset(0, 0);
 
-                e.Graphics.DrawString(length.ToString(), new Font("Courier New", 20, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, tp, stringFormat);
+                e.Graphics.DrawString(length.ToString(), new Font("Courier New", 20, FontStyle.Bold, GraphicsUnit.Pixel), new SolidBrush(linePen.Color), tp, stringFormat);
             }
         }
 

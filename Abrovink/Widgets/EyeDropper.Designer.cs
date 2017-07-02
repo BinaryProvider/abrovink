@@ -1,6 +1,6 @@
-﻿namespace Abrovink.EyeDropper
+﻿namespace Abrovink.Widgets
 {
-    partial class Widget
+    partial class EyeDropper
     {
         /// <summary>
         /// Required designer variable.

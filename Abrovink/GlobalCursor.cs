@@ -13,14 +13,14 @@ namespace Abrovink
 
         public void Change(string cursor)
         {
-            RegistryKey pRegKey = Registry.CurrentUser;
+            var pRegKey = Registry.CurrentUser;
             pRegKey = pRegKey.OpenSubKey(@"Control Panel\Cursors");
             paths.Clear();
             foreach (var key in pRegKey.GetValueNames())
             {
-                Object _key = pRegKey.GetValue(key);
+                var _key = pRegKey.GetValue(key);
                 paths.Add(key, _key.ToString());
-                Object val = Registry.GetValue(@"HKEY_CURRENT_USER\Control Panel\Cursors", key, null);
+                var val = Registry.GetValue(@"HKEY_CURRENT_USER\Control Panel\Cursors", key, null);
                 Registry.SetValue(@"HKEY_CURRENT_USER\Control Panel\Cursors", key, cursor);
             }
 
@@ -29,11 +29,11 @@ namespace Abrovink
 
         public void ResetToDefault()
         {
-            RegistryKey pRegKey = Registry.CurrentUser;
+            var pRegKey = Registry.CurrentUser;
             pRegKey = pRegKey.OpenSubKey(@"Control Panel\Cursors");
             foreach (string key in paths.Keys)
             {
-                string path = paths[key];
+                var path = paths[key];
                 Registry.SetValue(@"HKEY_CURRENT_USER\Control Panel\Cursors", key, path);
             }
             Win32.SystemParametersInfo(Win32.SPI_SETCURSORS, 0, null, Win32.SPIF_UPDATEINIFILE | Win32.SPIF_SENDCHANGE);

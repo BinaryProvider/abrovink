@@ -2,51 +2,21 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace Abrovink
 {
-    public class FormDoubleBuffered : Form
-    {
-        public FormDoubleBuffered() : base()
-        {
-            this.DoubleBuffered = true;
-            //this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
-            //                        ControlStyles.UserPaint |
-            //                        ControlStyles.AllPaintingInWmPaint, true);
-            //this.SetStyle(ControlStyles.ResizeRedraw, true);
-            //this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-        }
-    }
-
-    public class PanelDoubleBuffered : Panel
-    {
-        public PanelDoubleBuffered() : base()
-        {
-            this.DoubleBuffered = true;
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000;
-
-                return cp;
-            }
-        }
-    }
-
-    public class Utils
+    public static class Utils
     {
         public static bool DefaultScreenOrder()
         {
-            Screen primaryScreen = Screen.AllScreens[0];
-            Screen otherScreen = Screen.AllScreens[1];
+            var primaryScreen = Screen.AllScreens[0];
+            var otherScreen = Screen.AllScreens[1];
 
             foreach (Screen screen in Screen.AllScreens)
             {
@@ -85,10 +55,10 @@ namespace Abrovink
 
         public static Color GetPixelColor(int x, int y)
         {
-            IntPtr hdc = Win32.GetDC(IntPtr.Zero);
-            uint pixel = Win32.GetPixel(hdc, x, y);
+            var hdc = Win32.GetDC(IntPtr.Zero);
+            var pixel = Win32.GetPixel(hdc, x, y);
             Win32.ReleaseDC(IntPtr.Zero, hdc);
-            Color color = Color.FromArgb((int)(pixel & 0x000000FF), (int)(pixel & 0x0000FF00) >> 8, (int)(pixel & 0x00FF0000) >> 16);
+            var color = Color.FromArgb((int)(pixel & 0x000000FF), (int)(pixel & 0x0000FF00) >> 8, (int)(pixel & 0x00FF0000) >> 16);
             return color;
         }
 
@@ -96,7 +66,7 @@ namespace Abrovink
         {
             try
             {
-                Bitmap screen = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height, PixelFormat.Format32bppArgb);
+                var screen = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height, PixelFormat.Format32bppArgb);
 
                 using (Graphics screenGraph = Graphics.FromImage(screen))
                 {
@@ -138,7 +108,7 @@ namespace Abrovink
 
         public static void DisableCaptureForm(string name)
         {
-            Form f = Application.OpenForms[name];
+            var f = Application.OpenForms[name];
             if (f != null)
             {
                 f.Close();
@@ -150,7 +120,7 @@ namespace Abrovink
         {
             // TODO: Refactoring needed. Better way to deal with multiple screens and translated mouse coordinates and screen positions.
 
-            Point p = dp;
+            var p = dp;
 
             if (Utils.DefaultScreenOrder())
             {
@@ -171,8 +141,8 @@ namespace Abrovink
 
         public static Point[] StraightenLine(Point p1, Point p2)
         {
-            int diffY = Math.Abs(p1.Y - p2.Y);
-            int diffX = Math.Abs(p1.X - p2.X);
+            var diffY = Math.Abs(p1.Y - p2.Y);
+            var diffX = Math.Abs(p1.X - p2.X);
 
             if (diffX > diffY)
             {
@@ -188,6 +158,64 @@ namespace Abrovink
             }
 
             return new Point[] { p1, p2 };
+        }
+
+        public static string XmlSerializeToString(this object objectInstance)
+        {
+            var serializer = new XmlSerializer(objectInstance.GetType());
+            var sb = new StringBuilder();
+
+            using (TextWriter writer = new StringWriter(sb))
+            {
+                serializer.Serialize(writer, objectInstance);
+            }
+
+            return sb.ToString();
+        }
+
+        public static T XmlDeserializeFromString<T>(this string objectData)
+        {
+            return (T)XmlDeserializeFromString(objectData, typeof(T));
+        }
+
+        public static object XmlDeserializeFromString(this string objectData, Type type)
+        {
+            var serializer = new XmlSerializer(type);
+            object result;
+
+            using (TextReader reader = new StringReader(objectData))
+            {
+                result = serializer.Deserialize(reader);
+            }
+
+            return result;
+        }
+    }
+
+    public class FormDoubleBuffered : Form
+    {
+        public FormDoubleBuffered() : base()
+        {
+            this.DoubleBuffered = true;
+        }
+    }
+
+    public class PanelDoubleBuffered : Panel
+    {
+        public PanelDoubleBuffered() : base()
+        {
+            this.DoubleBuffered = true;
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;
+
+                return cp;
+            }
         }
     }
 }

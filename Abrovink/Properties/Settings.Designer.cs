@@ -8,22 +8,56 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Abrovink.Properties
-{
-
-
+namespace Abrovink.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-
-        public static Settings Default
-        {
-            get
-            {
+        
+        public static Settings Default {
+            get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Options_0 {
+            get {
+                return ((string)(this["Options_0"]));
+            }
+            set {
+                this["Options_0"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Options_1 {
+            get {
+                return ((string)(this["Options_1"]));
+            }
+            set {
+                this["Options_1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Toolbox icon made by \'Elegant Themes\' from www.flaticon.com\r\nEyedropper icon made" +
+            " by \'Madebyoliver\' from www.flaticon.com\r\nRuler icon made by \'Freepik\' from www." +
+            "flaticon.com")]
+        public string Credits {
+            get {
+                return ((string)(this["Credits"]));
+            }
+            set {
+                this["Credits"] = value;
             }
         }
     }

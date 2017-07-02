@@ -7,6 +7,9 @@ using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
 using System.Reflection;
 using System.Drawing;
+using System.Collections.Specialized;
+using Abrovink.Widgets;
+using System.Configuration;
 
 namespace Abrovink
 {
@@ -15,7 +18,11 @@ namespace Abrovink
         private NotifyIcon icon;
         private IKeyboardMouseEvents hook;
         private GlobalCursor globalCursor = new GlobalCursor();
-        private bool activeTool = false;
+
+        private bool activeWidget = false;
+
+        private System.Windows.Input.KeyGestureConverter kgConverter = new System.Windows.Input.KeyGestureConverter();
+        private Dictionary<WidgetType, System.Windows.Input.KeyGesture> hotkeys = new Dictionary<WidgetType, System.Windows.Input.KeyGesture>();
 
         public TrayApp()
         {
@@ -24,21 +31,33 @@ namespace Abrovink
 
         public void Start()
         {
+            LoadHotkeys();
+
             hook = Hook.GlobalEvents();
             hook.KeyDown += Hook_KeyDown;
 
-            icon.Icon = Properties.Resources.TempIcon;
+            SetTrayIcon(null);
             icon.Visible = true;
 
             icon.ContextMenu = SetupContextMenu();
+
+            if (System.Diagnostics.Debugger.IsAttached)
+                Properties.Settings.Default.Reset();
         }
 
         private ContextMenu SetupContextMenu()
         {
-            ContextMenu menu = new ContextMenu();
+            var menu = new ContextMenu();
 
-            MenuItem item = new MenuItem("Exit", menu_Click);
-            item.Tag = 0;
+            MenuItem item;
+
+            item = new MenuItem("Options", menu_Click);
+            menu.MenuItems.Add(item);
+
+            item = new MenuItem("-");
+            menu.MenuItems.Add(item);
+
+            item = new MenuItem("Exit", menu_Click);
             menu.MenuItems.Add(item);
 
             return menu;
@@ -46,13 +65,22 @@ namespace Abrovink
 
         private void menu_Click(object sender, EventArgs e)
         {
-            MenuItem mi = (MenuItem)sender;
-            int id = int.Parse(mi.Tag.ToString());
+            var mi = (MenuItem)sender;
 
-            switch(id)
+            switch(mi.Text)
             {
-                // Exit
-                case 0:
+                case "Options":
+                    if (Application.OpenForms["Options"] == null)
+                    {
+                        var frm = new Options();
+                        if(frm.ShowDialog() == DialogResult.OK)
+                        {
+                            LoadHotkeys();
+                        }
+                    }
+                    break;
+
+                case "Exit":
                     Application.Exit();
                     break;
 
@@ -61,38 +89,117 @@ namespace Abrovink
             }
         }
 
+        public void LoadHotkeys()
+        {
+            Properties.Settings settings = Properties.Settings.Default;
+            hotkeys = new Dictionary<WidgetType, System.Windows.Input.KeyGesture>();
+
+            foreach (WidgetType type in Enum.GetValues(typeof(WidgetType)))
+            {
+                var strOptions = settings["Options_" + (int)type].ToString();
+                var strHotkey = "";
+
+                if (string.IsNullOrEmpty(strOptions))
+                {
+                    // Default hotkeys
+                    strHotkey = "Ctrl+Alt+" + ((int)type + 1);
+                }
+                else
+                {
+                    // Custom hotkeys
+                    var data = settings["Options_" + (int)type].ToString();
+                    if(!string.IsNullOrEmpty(data))
+                    {
+                        strHotkey = OptionsData.LoadDataString(data, "hotkey");
+                    }
+                }
+
+                var gesture = kgConverter.ConvertFromString(strHotkey) as System.Windows.Input.KeyGesture;
+                if (gesture != null)
+                {
+                    hotkeys.Add(type, gesture);
+                }
+            }
+        }
+
         private void Hook_KeyDown(object sender, KeyEventArgs e)
         {
             try
             {
-                if (!activeTool)
+                if (!activeWidget)
                 {
-                    if ((Control.ModifierKeys == Keys.Control) && e.KeyCode == Keys.D1)
+                    var wpfKey = System.Windows.Input.KeyInterop.KeyFromVirtualKey((int)e.KeyCode);
+                    var wpfArgs = new System.Windows.Input.KeyEventArgs(System.Windows.Input.Keyboard.PrimaryDevice,
+                                                                        new System.Windows.Interop.HwndSource(0, 0, 0, 0, 0, "", IntPtr.Zero),
+                                                                        0,
+                                                                        wpfKey);
+
+                    foreach (KeyValuePair<WidgetType, System.Windows.Input.KeyGesture> hotkey in hotkeys)
                     {
-                        activeTool = true;
-                        globalCursor.Change(@"%systemroot%\Cursors\cross_i.cur");
-                        EyeDropper.Widget widget = new EyeDropper.Widget();
-                        widget.Show();
-                        ((IAbrovinkWidget)widget).isClosing += CleanUpWidget;
-                    }
-                    else if ((Control.ModifierKeys == Keys.Control) && e.KeyCode == Keys.D2)
-                    {
-                        globalCursor.Change(@"%systemroot%\Cursors\aero_ew.cur");
-                        activeTool = true;
-                        Ruler.Widget widget = new Ruler.Widget();
-                        widget.isClosing += CleanUpWidget;
+                        if (hotkey.Value.Matches(null, wpfArgs))
+                        {
+                            LoadWidget(hotkey.Key);
+                        }
                     }
                 }
             }
             catch
             {
-                globalCursor.ResetToDefault();
+                CleanUpWidget();
+            }
+        }
+
+        private void LoadWidget(WidgetType type)
+        {
+            if (Application.OpenForms["Options"] == null)
+            {
+                activeWidget = true;
+
+                SetTrayIcon(type);
+
+                switch (type)
+                {
+                    case WidgetType.EyeDropper:
+                        globalCursor.Change(@"%systemroot%\Cursors\cross_i.cur");
+                        var eyedropper = new EyeDropper();
+                        eyedropper.Show();
+                        ((IAbrovinkWidget)eyedropper).isClosing += CleanUpWidget;
+                        break;
+
+                    case WidgetType.Ruler:
+                        globalCursor.Change(@"%systemroot%\Cursors\cross_i.cur");
+                        var ruler = new Ruler();
+                        ruler.isClosing += CleanUpWidget;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void SetTrayIcon(WidgetType? widget)
+        {
+            switch(widget)
+            {
+                case WidgetType.EyeDropper:
+                    icon.Icon = Properties.Resources.Icon_Eyedropper;
+                    break;
+
+                case WidgetType.Ruler:
+                    icon.Icon = Properties.Resources.Icon_Ruler;
+                    break;
+
+                default:
+                    icon.Icon = Properties.Resources.Icon_Toolbox;
+                    break;
             }
         }
 
         private void CleanUpWidget()
         {
-            activeTool = false;
+            activeWidget = false;
+            SetTrayIcon(null);
             globalCursor.ResetToDefault();
         }
 

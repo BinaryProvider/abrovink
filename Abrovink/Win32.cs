@@ -61,5 +61,7 @@ namespace Abrovink
         public static extern IntPtr GetWindowRect(IntPtr hWnd, ref RECT rect);
         [DllImport("gdi32.dll")]
         public static extern uint GetPixel(IntPtr hdc, int nXPos, int nYPos);
+        [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        public static extern bool SetForegroundWindow(HandleRef hWnd);
     }
 }

@@ -10,10 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Abrovink.Ruler
+namespace Abrovink.Widgets
 {
-    public class Widget : IAbrovinkWidget
+    public class Ruler : IAbrovinkWidget
     {
+        private WidgetType type = WidgetType.Ruler;
+
+        public WidgetType Type
+        {
+            get { return type; }
+            set { }
+        }
+
         public event WidgetClosing isClosing;
 
         private const string FORM_NAME = "Ruler_CaptureForm";
@@ -34,7 +42,7 @@ namespace Abrovink.Ruler
 
         private int length = 0;
 
-        public Widget()
+        public Ruler()
         {
             Utils.EnableCaptureForm(ref captureForm, FORM_NAME);
             if (captureForm != null)
@@ -96,7 +104,7 @@ namespace Abrovink.Ruler
 
             length = (int)Utils.DistanceBetweenPoints(p1, p2);
 
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
             path.AddLine(p1, p2);
             path.AddLine(prev1, prev2);
 
@@ -152,7 +160,7 @@ namespace Abrovink.Ruler
 
         private void CaptureForm_Paint(object sender, PaintEventArgs e)
         {
-            bool rightToLeft = (p1.X > p2.X);
+            var rightToLeft = (p1.X > p2.X);
 
             if (drawLine)
             {
@@ -190,7 +198,7 @@ namespace Abrovink.Ruler
                         strokeLength = 8;
                     }
 
-                    Point p = CalculatePoint(p1, p2, i);
+                    var p = CalculatePoint(p1, p2, i);
 
                     int x = (int)(p.X + Math.Cos(angle - DegreeToRadian(90)) * strokeLength);
                     int y = (int)(p.Y + Math.Sin(angle - DegreeToRadian(90)) * strokeLength);
@@ -201,18 +209,18 @@ namespace Abrovink.Ruler
                         y = (int)(p.Y - Math.Sin(angle - DegreeToRadian(90)) * strokeLength);
                     }
 
-                    Point lp1 = new Point(x, y);
+                    var lp1 = new Point(x, y);
 
                     e.Graphics.DrawLine(linePen, p, lp1);
                 }
 
-                StringFormat stringFormat = new StringFormat();
+                var stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
                 stringFormat.LineAlignment = StringAlignment.Center;
 
                 int tx = (int)(p2.X + Math.Cos(angle - DegreeToRadian(90)) * 30);
                 int ty = (int)(p2.Y + Math.Sin(angle - DegreeToRadian(90)) * 30);
-                Point tp = new Point(tx, ty);
+                var tp = new Point(tx, ty);
                 tp.Offset(0, 0);
 
                 e.Graphics.DrawString(length.ToString(), new Font("Courier New", 20, FontStyle.Bold, GraphicsUnit.Pixel), new SolidBrush(linePen.Color), tp, stringFormat);
@@ -233,7 +241,7 @@ namespace Abrovink.Ruler
 
         private Point CalculatePoint(Point a, Point b, int distance)
         {
-            Point newPoint = new Point(0, 0);
+            var newPoint = new Point(0, 0);
             double magnitude = Math.Sqrt(Math.Pow((b.Y - a.Y), 2) + Math.Pow((b.X - a.X), 2));
             if (magnitude != 0)
             {
@@ -250,8 +258,8 @@ namespace Abrovink.Ruler
 
         private double AngleBetweenPoints(Point a, Point b)
         {
-            float x = b.X - a.X;
-            float y = b.Y - a.Y;
+            var x = b.X - a.X;
+            var y = b.Y - a.Y;
             return Math.Atan2(y, x) * 180.0 / Math.PI;
         }
 

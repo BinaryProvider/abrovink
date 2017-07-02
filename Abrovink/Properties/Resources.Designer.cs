@@ -63,9 +63,29 @@ namespace Abrovink.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon TempIcon {
+        internal static System.Drawing.Icon Icon_Eyedropper {
             get {
-                object obj = ResourceManager.GetObject("TempIcon", resourceCulture);
+                object obj = ResourceManager.GetObject("Icon_Eyedropper", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Icon_Ruler {
+            get {
+                object obj = ResourceManager.GetObject("Icon_Ruler", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Icon_Toolbox {
+            get {
+                object obj = ResourceManager.GetObject("Icon_Toolbox", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

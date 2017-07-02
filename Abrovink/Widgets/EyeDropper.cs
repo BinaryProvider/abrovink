@@ -8,10 +8,18 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Diagnostics;
 
-namespace Abrovink.EyeDropper
+namespace Abrovink.Widgets
 {
-    public partial class Widget : Form, IAbrovinkWidget
+    public partial class EyeDropper : Form, IAbrovinkWidget
     {
+        private WidgetType type = WidgetType.EyeDropper;
+
+        public WidgetType Type
+        {
+            get { return type; }
+            set { }
+        }
+
         public event WidgetClosing isClosing;
 
         private const string FORM_NAME = "EyeDropper_CaptureForm";
@@ -36,9 +44,15 @@ namespace Abrovink.EyeDropper
 
         private Form captureForm = null;
 
-        public Widget()
+        public EyeDropper()
         {
             InitializeComponent();
+
+            var resolution = OptionsData.LoadDataInt(Properties.Settings.Default["Options_" + (int)type].ToString(), "resolution");
+            if(resolution != -1)
+            {
+                previewResolution = new Size(resolution, resolution);
+            }
 
             hook = Hook.GlobalEvents();
             hook.MouseMoveExt += Hook_MouseMoveExt;
@@ -62,7 +76,7 @@ namespace Abrovink.EyeDropper
 
         private void Widget_Load(object sender, EventArgs e)
         {
-            Point loc = Cursor.Position;
+            var loc = Cursor.Position;
             loc.Offset(offset.X, offset.Y);
             this.Location = loc;
             screenshot = Utils.CaptureWindow();
@@ -84,11 +98,11 @@ namespace Abrovink.EyeDropper
 
         private void PreviewPanel_Paint(object sender, PaintEventArgs e)
         {
-            Color crosshairColor = Utils.DifferenceColor(color);
-            Point p1 = new Point(previewPanel.Width / 2, 25);
-            Point p2 = new Point(previewPanel.Width / 2, previewPanel.Height - 25);
-            Point p3 = new Point(25, previewPanel.Height / 2);
-            Point p4 = new Point(previewPanel.Width - 25, previewPanel.Height / 2);
+            var crosshairColor = Utils.DifferenceColor(color);
+            var p1 = new Point(previewPanel.Width / 2, 25);
+            var p2 = new Point(previewPanel.Width / 2, previewPanel.Height - 25);
+            var p3 = new Point(25, previewPanel.Height / 2);
+            var p4 = new Point(previewPanel.Width - 25, previewPanel.Height / 2);
             e.Graphics.DrawLine(new Pen(crosshairColor, 1), p1, p2);
             e.Graphics.DrawLine(new Pen(crosshairColor, 1), p3, p4);
         }
@@ -145,11 +159,11 @@ namespace Abrovink.EyeDropper
 
         private void DrawBorder()
         {
-            IntPtr hdc = Win32.GetWindowDC(this.Handle);
-            Graphics g = Graphics.FromHdc(hdc);
-            Pen p = new Pen(previewBorderColor, previewBorderWidth);
+            var hdc = Win32.GetWindowDC(this.Handle);
+            var g = Graphics.FromHdc(hdc);
+            var p = new Pen(previewBorderColor, previewBorderWidth);
 
-            Rectangle r = new Rectangle(0, 0, DisplayRectangle.Width - previewBorderWidth, DisplayRectangle.Height - previewBorderWidth);
+            var r = new Rectangle(0, 0, DisplayRectangle.Width - previewBorderWidth, DisplayRectangle.Height - previewBorderWidth);
             g.DrawRectangle(p, r);
 
             g.DrawLine(p, new Point(previewPanel.Width + previewBorderWidth, previewBorderWidth), new Point(previewPanel.Width + previewBorderWidth, previewPanel.Height));

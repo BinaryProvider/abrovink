@@ -15,6 +15,9 @@ namespace Abrovink
     {
         public static bool DefaultScreenOrder()
         {
+            if (Screen.AllScreens.Count() == 1)
+                return true;
+
             var primaryScreen = Screen.AllScreens[0];
             var otherScreen = Screen.AllScreens[1];
 
@@ -88,7 +91,7 @@ namespace Abrovink
             f.BackColor = Color.Red;
             f.FormBorderStyle = FormBorderStyle.None;
             f.StartPosition = FormStartPosition.Manual;
-            f.Location = Screen.AllScreens[1].WorkingArea.Location;
+            f.Location = Screen.AllScreens[Screen.AllScreens.Count() - 1].WorkingArea.Location;
             f.TransparencyKey = Color.Red;
 
             if (Utils.DefaultScreenOrder())

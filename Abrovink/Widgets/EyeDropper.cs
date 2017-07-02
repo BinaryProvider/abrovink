@@ -48,10 +48,14 @@ namespace Abrovink.Widgets
         {
             InitializeComponent();
 
-            var resolution = OptionsData.LoadDataInt(Properties.Settings.Default["Options_" + (int)type].ToString(), "resolution");
-            if(resolution != -1)
+            string options = Properties.Settings.Default["Options_" + (int)type].ToString();
+            if (!string.IsNullOrEmpty(options))
             {
-                previewResolution = new Size(resolution, resolution);
+                var resolution = OptionsData.LoadDataInt(options, "resolution");
+                if (resolution != -1)
+                {
+                    previewResolution = new Size(resolution, resolution);
+                }
             }
 
             hook = Hook.GlobalEvents();
@@ -141,7 +145,6 @@ namespace Abrovink.Widgets
                 if (Screen.AllScreens.Length > 1)
                 {
                     translatedCursorLoc = Utils.TranslateDisplayPoint(Cursor.Position);
-                    //translatedCursorLoc = new Point(Cursor.Position.X + screenWidth, Cursor.Position.Y);
                 }
 
                 previewGraphics.SmoothingMode = SmoothingMode.HighQuality;

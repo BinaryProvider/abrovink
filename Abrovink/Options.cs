@@ -151,15 +151,24 @@ namespace Abrovink
                 switch (type)
                 {
                     case WidgetType.EyeDropper:
-                        EyedropperHotkey0.Text = hotkey[0];
-                        EyedropperHotkey1.Text = hotkey[1];
-                        EyedropperHotkey2.Text = hotkey[2];
+                        if(hotkey.Length < 3)
+                        {
+                            EyedropperHotkey0.Text = "";
+                            EyedropperHotkey0.Text = hotkey[1];
+                            EyedropperHotkey2.Text = hotkey[2];
+                        }
+                        else
+                        {
+                            EyedropperHotkey0.Text = hotkey[0];
+                            EyedropperHotkey1.Text = hotkey[1];
+                            EyedropperHotkey2.Text = hotkey[2];
+                        }
                         EyedropperResolution0.Text = data.IntVals["resolution"].ToString() + "x" + data.IntVals["resolution"].ToString();
                         break;
 
                     case WidgetType.Ruler:
-                        RulerHotkey0.Text = hotkey[0];
-                        RulerHotkey1.Text = hotkey[1];
+                        //RulerHotkey0.Text = hotkey[0];
+                        //RulerHotkey1.Text = hotkey[1];
                         break;
 
                     default:
@@ -176,12 +185,12 @@ namespace Abrovink
                 switch (type)
                 {
                     case WidgetType.EyeDropper:
-                        options[type].StringVals["hotkey"] = EyedropperHotkey0.Text + "+" + EyedropperHotkey1.Text + "+" + EyedropperHotkey2.Text;
+                        options[type].StringVals["hotkey"] = (EyedropperHotkey0.Text + "+" + EyedropperHotkey1.Text + "+" + EyedropperHotkey2.Text).Trim('+');
                         options[type].IntVals["resolution"] = ((KeyValuePair<int,string>)EyedropperResolution0.SelectedItem).Key;
                         break;
 
                     case WidgetType.Ruler:
-                        options[type].StringVals["hotkey"] = RulerHotkey0.Text + "+" + RulerHotkey1.Text;
+                        //options[type].StringVals["hotkey"] = RulerHotkey0.Text + "+" + RulerHotkey1.Text;
                         break;
 
                     default:
@@ -192,6 +201,16 @@ namespace Abrovink
             }
 
             settings.Save();
+        }
+
+        private void EyedropperHotkey_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var box = (sender as ComboBox);
+            if(EyedropperHotkey0.Text == EyedropperHotkey1.Text)
+            {
+                MessageBox.Show("You can't assign two modifier keys of the same type.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                box.SelectedIndex = string.IsNullOrEmpty(EyedropperHotkey0.Text) ? 1 : 0;
+            }
         }
     }
 }

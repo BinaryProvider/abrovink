@@ -31,7 +31,13 @@
             this.RulerEyedropper = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.EyedropperFormat = new System.Windows.Forms.GroupBox();
+            this.EyedropperFormat0 = new System.Windows.Forms.ComboBox();
+            this.EyedropperResolution = new System.Windows.Forms.GroupBox();
+            this.EyedropperResolution0 = new System.Windows.Forms.ComboBox();
             this.EyedropperHotkey = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.EyedropperHotkey1 = new System.Windows.Forms.ComboBox();
             this.EyedropperHotkey2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.EyedropperHotkey0 = new System.Windows.Forms.ComboBox();
@@ -40,25 +46,19 @@
             this.RulerHotkey1 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.RulerHotkey0 = new System.Windows.Forms.ComboBox();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.txtCredits = new System.Windows.Forms.TextBox();
             this.lblCreditsHeader = new System.Windows.Forms.Label();
-            this.EyedropperResolution = new System.Windows.Forms.GroupBox();
+            this.txtCredits = new System.Windows.Forms.TextBox();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.btnOk = new System.Windows.Forms.Button();
-            this.EyedropperResolution0 = new System.Windows.Forms.ComboBox();
-            this.EyedropperFormat = new System.Windows.Forms.GroupBox();
-            this.EyedropperFormat0 = new System.Windows.Forms.ComboBox();
-            this.EyedropperHotkey1 = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.RulerEyedropper.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.EyedropperFormat.SuspendLayout();
+            this.EyedropperResolution.SuspendLayout();
             this.EyedropperHotkey.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.RulerHotkey.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            this.EyedropperResolution.SuspendLayout();
-            this.EyedropperFormat.SuspendLayout();
             this.SuspendLayout();
             // 
             // RulerEyedropper
@@ -99,6 +99,57 @@
             this.tabPage2.Text = "Eyedropper";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // EyedropperFormat
+            // 
+            this.EyedropperFormat.Controls.Add(this.EyedropperFormat0);
+            this.EyedropperFormat.Location = new System.Drawing.Point(12, 14);
+            this.EyedropperFormat.Name = "EyedropperFormat";
+            this.EyedropperFormat.Size = new System.Drawing.Size(199, 63);
+            this.EyedropperFormat.TabIndex = 3;
+            this.EyedropperFormat.TabStop = false;
+            this.EyedropperFormat.Text = "Format";
+            // 
+            // EyedropperFormat0
+            // 
+            this.EyedropperFormat0.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EyedropperFormat0.DisplayMember = "Value";
+            this.EyedropperFormat0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.EyedropperFormat0.FormattingEnabled = true;
+            this.EyedropperFormat0.Items.AddRange(new object[] {
+            "HEX",
+            "RGB"});
+            this.EyedropperFormat0.Location = new System.Drawing.Point(14, 25);
+            this.EyedropperFormat0.Name = "EyedropperFormat0";
+            this.EyedropperFormat0.Size = new System.Drawing.Size(168, 21);
+            this.EyedropperFormat0.TabIndex = 3;
+            this.EyedropperFormat0.ValueMember = "Key";
+            // 
+            // EyedropperResolution
+            // 
+            this.EyedropperResolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EyedropperResolution.Controls.Add(this.EyedropperResolution0);
+            this.EyedropperResolution.Location = new System.Drawing.Point(221, 15);
+            this.EyedropperResolution.Name = "EyedropperResolution";
+            this.EyedropperResolution.Size = new System.Drawing.Size(154, 62);
+            this.EyedropperResolution.TabIndex = 1;
+            this.EyedropperResolution.TabStop = false;
+            this.EyedropperResolution.Text = "Resolution";
+            // 
+            // EyedropperResolution0
+            // 
+            this.EyedropperResolution0.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EyedropperResolution0.DisplayMember = "Value";
+            this.EyedropperResolution0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.EyedropperResolution0.FormattingEnabled = true;
+            this.EyedropperResolution0.Location = new System.Drawing.Point(15, 25);
+            this.EyedropperResolution0.Name = "EyedropperResolution0";
+            this.EyedropperResolution0.Size = new System.Drawing.Size(128, 21);
+            this.EyedropperResolution0.TabIndex = 2;
+            this.EyedropperResolution0.ValueMember = "Key";
+            // 
             // EyedropperHotkey
             // 
             this.EyedropperHotkey.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -113,6 +164,33 @@
             this.EyedropperHotkey.TabIndex = 0;
             this.EyedropperHotkey.TabStop = false;
             this.EyedropperHotkey.Text = "Hotkey";
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(107, 28);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(15, 16);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "+";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // EyedropperHotkey1
+            // 
+            this.EyedropperHotkey1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.EyedropperHotkey1.FormattingEnabled = true;
+            this.EyedropperHotkey1.Items.AddRange(new object[] {
+            "",
+            "Alt",
+            "Ctrl",
+            "Win"});
+            this.EyedropperHotkey1.Location = new System.Drawing.Point(125, 25);
+            this.EyedropperHotkey1.Name = "EyedropperHotkey1";
+            this.EyedropperHotkey1.Size = new System.Drawing.Size(92, 21);
+            this.EyedropperHotkey1.TabIndex = 2;
+            this.EyedropperHotkey1.SelectedIndexChanged += new System.EventHandler(this.EyedropperHotkey_SelectedIndexChanged);
             // 
             // EyedropperHotkey2
             // 
@@ -144,6 +222,7 @@
             this.EyedropperHotkey0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EyedropperHotkey0.FormattingEnabled = true;
             this.EyedropperHotkey0.Items.AddRange(new object[] {
+            "",
             "Alt",
             "Ctrl",
             "Win"});
@@ -151,6 +230,7 @@
             this.EyedropperHotkey0.Name = "EyedropperHotkey0";
             this.EyedropperHotkey0.Size = new System.Drawing.Size(92, 21);
             this.EyedropperHotkey0.TabIndex = 1;
+            this.EyedropperHotkey0.SelectedIndexChanged += new System.EventHandler(this.EyedropperHotkey_SelectedIndexChanged);
             // 
             // tabPage3
             // 
@@ -214,19 +294,6 @@
             this.RulerHotkey0.Size = new System.Drawing.Size(75, 21);
             this.RulerHotkey0.TabIndex = 1;
             // 
-            // btnCancel
-            // 
-            this.btnCancel.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(327, 212);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 1;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.lblCreditsHeader);
@@ -237,6 +304,18 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "About";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // lblCreditsHeader
+            // 
+            this.lblCreditsHeader.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblCreditsHeader.AutoSize = true;
+            this.lblCreditsHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCreditsHeader.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.lblCreditsHeader.Location = new System.Drawing.Point(9, 82);
+            this.lblCreditsHeader.Name = "lblCreditsHeader";
+            this.lblCreditsHeader.Size = new System.Drawing.Size(46, 13);
+            this.lblCreditsHeader.TabIndex = 1;
+            this.lblCreditsHeader.Text = "Credits";
             // 
             // txtCredits
             // 
@@ -254,29 +333,18 @@
             this.txtCredits.Size = new System.Drawing.Size(364, 57);
             this.txtCredits.TabIndex = 0;
             // 
-            // lblCreditsHeader
+            // btnCancel
             // 
-            this.lblCreditsHeader.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblCreditsHeader.AutoSize = true;
-            this.lblCreditsHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCreditsHeader.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-            this.lblCreditsHeader.Location = new System.Drawing.Point(9, 82);
-            this.lblCreditsHeader.Name = "lblCreditsHeader";
-            this.lblCreditsHeader.Size = new System.Drawing.Size(46, 13);
-            this.lblCreditsHeader.TabIndex = 1;
-            this.lblCreditsHeader.Text = "Credits";
-            // 
-            // EyedropperResolution
-            // 
-            this.EyedropperResolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EyedropperResolution.Controls.Add(this.EyedropperResolution0);
-            this.EyedropperResolution.Location = new System.Drawing.Point(221, 15);
-            this.EyedropperResolution.Name = "EyedropperResolution";
-            this.EyedropperResolution.Size = new System.Drawing.Size(154, 62);
-            this.EyedropperResolution.TabIndex = 1;
-            this.EyedropperResolution.TabStop = false;
-            this.EyedropperResolution.Text = "Resolution";
+            this.btnCancel.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(327, 212);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 1;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // btnOk
             // 
@@ -289,70 +357,6 @@
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
-            // 
-            // EyedropperResolution0
-            // 
-            this.EyedropperResolution0.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EyedropperResolution0.DisplayMember = "Value";
-            this.EyedropperResolution0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.EyedropperResolution0.FormattingEnabled = true;
-            this.EyedropperResolution0.Location = new System.Drawing.Point(15, 25);
-            this.EyedropperResolution0.Name = "EyedropperResolution0";
-            this.EyedropperResolution0.Size = new System.Drawing.Size(128, 21);
-            this.EyedropperResolution0.TabIndex = 2;
-            this.EyedropperResolution0.ValueMember = "Key";
-            // 
-            // EyedropperFormat
-            // 
-            this.EyedropperFormat.Controls.Add(this.EyedropperFormat0);
-            this.EyedropperFormat.Location = new System.Drawing.Point(12, 14);
-            this.EyedropperFormat.Name = "EyedropperFormat";
-            this.EyedropperFormat.Size = new System.Drawing.Size(199, 63);
-            this.EyedropperFormat.TabIndex = 3;
-            this.EyedropperFormat.TabStop = false;
-            this.EyedropperFormat.Text = "Format";
-            // 
-            // EyedropperFormat0
-            // 
-            this.EyedropperFormat0.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EyedropperFormat0.DisplayMember = "Value";
-            this.EyedropperFormat0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.EyedropperFormat0.FormattingEnabled = true;
-            this.EyedropperFormat0.Items.AddRange(new object[] {
-            "HEX",
-            "RGB"});
-            this.EyedropperFormat0.Location = new System.Drawing.Point(14, 25);
-            this.EyedropperFormat0.Name = "EyedropperFormat0";
-            this.EyedropperFormat0.Size = new System.Drawing.Size(168, 21);
-            this.EyedropperFormat0.TabIndex = 3;
-            this.EyedropperFormat0.ValueMember = "Key";
-            // 
-            // EyedropperHotkey1
-            // 
-            this.EyedropperHotkey1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.EyedropperHotkey1.FormattingEnabled = true;
-            this.EyedropperHotkey1.Items.AddRange(new object[] {
-            "Alt",
-            "Ctrl",
-            "Win"});
-            this.EyedropperHotkey1.Location = new System.Drawing.Point(125, 25);
-            this.EyedropperHotkey1.Name = "EyedropperHotkey1";
-            this.EyedropperHotkey1.Size = new System.Drawing.Size(92, 21);
-            this.EyedropperHotkey1.TabIndex = 2;
-            // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(107, 28);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(15, 16);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "+";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Options
             // 
@@ -371,6 +375,8 @@
             this.Text = "Abrovink Options";
             this.RulerEyedropper.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.EyedropperFormat.ResumeLayout(false);
+            this.EyedropperResolution.ResumeLayout(false);
             this.EyedropperHotkey.ResumeLayout(false);
             this.EyedropperHotkey.PerformLayout();
             this.tabPage3.ResumeLayout(false);
@@ -378,8 +384,6 @@
             this.RulerHotkey.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
-            this.EyedropperResolution.ResumeLayout(false);
-            this.EyedropperFormat.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

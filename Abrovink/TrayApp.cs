@@ -31,6 +31,9 @@ namespace Abrovink
 
         public void Start()
         {
+            if (System.Diagnostics.Debugger.IsAttached)
+                Properties.Settings.Default.Reset();
+
             LoadHotkeys();
 
             hook = Hook.GlobalEvents();
@@ -40,9 +43,6 @@ namespace Abrovink
             icon.Visible = true;
 
             icon.ContextMenu = SetupContextMenu();
-
-            if (System.Diagnostics.Debugger.IsAttached)
-                Properties.Settings.Default.Reset();
         }
 
         private ContextMenu SetupContextMenu()
@@ -180,7 +180,13 @@ namespace Abrovink
 
         private void SetTrayIcon(WidgetType? widget)
         {
-            switch(widget)
+            if (widget == null)
+            {
+                icon.Icon = Properties.Resources.Icon_Toolbox;
+                return;
+            }
+
+            switch (widget)
             {
                 case WidgetType.EyeDropper:
                     icon.Icon = Properties.Resources.Icon_Eyedropper;
